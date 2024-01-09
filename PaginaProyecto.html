@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparador de Precios</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10;
+      padding: 10;
+      background: linear-gradient(to right, #c9e5f7, #f2f8fd);
+      transition: background-color 1s;
+    }
+
+    #welcome-container {
+      text-align: center;
+      padding: 80px;
+      background-color: #29a0f0;
+      color: #ffffff;
+      border-radius: 15px;
+      transition: height 1s;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #inputName {
+      padding: 20px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 20px;
+      font-size: 16px;
+    }
+
+    #categories-container {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    .category {
+      width: 350px;
+      padding: 150px;
+      margin: 20px;
+      text-align: center;
+      background-color: #27d3f9;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .category:hover {
+      background-color: #1fa6db;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    th, td {
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+</head>
+<body>
+
+  <div id="welcome-container">
+    <h2>Bienvenido a tu comparador de precios</h2>
+    <p>Por favor, ingresa tu nombre:</p>
+    <input type="text" id="inputName" placeholder="Tu nombre">
+    <button onclick="showWelcome()">Ingresar</button>
+  </div>
+
+  <div id="categories-container">
+    <div class="category" onclick="showItems('Electrodomésticos')">Electrodomésticos</div>
+    <div class="category" onclick="showItems('Llantas y Automotiz')">Llantas y Automotriz</div>
+    <div class="category" onclick="showItems('Cosmeticos')">Cosmeticos</div>
+    <div class="category" onclick="showItems('Productos de Limpieza')">Productos de Limpieza</div>
+    <div class="category" onclick="showItems('Bebidas')">Bebidas</div>
+    <div class="category" onclick="showItems('Alimentos')">Alimentos</div>
+    <div class="category" onclick="showItems('Mascotas')">Mascotas</div>
+  </div>
+
+  <script>
+    var nombre = "";
+  
+    function showWelcome() {
+      nombre = document.getElementById('inputName').value;
+  
+      // Cambiar el fondo después de ingresar el nombre
+      document.body.style.backgroundColor = '#ffffff';
+  
+      // Animación para reducir la altura del contenedor de bienvenida
+      document.getElementById('welcome-container').style.height = 'auto';
+      document.getElementById('inputName').style.display = 'none';
+      document.getElementById('categories-container').style.display = 'flex';
+      document.getElementById('categories-container').style.opacity = '1';
+  
+      Swal.fire({
+        title: '¡Hola!',
+        text: 'Estamos felices de que nos visites',
+        icon: 'success'
+      }).then(function() {
+        Swal.fire({
+          title: '¡Bienvenido, ' + nombre + '!',
+          text: 'Esta página te ayudará a comparar precios de productos que puedes encontrar en distintas tiendas',
+          icon: 'info'
+        });
+      });
+    }
+  
+    function showItems(category) {
+      // Realizar la solicitud AJAX a la API en FastAPI
+      $.ajax({
+        url: 'http://127.0.0.1:8000/items',
+        type: 'GET',
+        data: { category: category },
+        success: function (data) {
+          // Actualizar la tabla con los datos recibidos
+          updateTable(data);
+        },
+        error: function () {
+          // Manejar errores si es necesario
+          console.error('Error al obtener datos de la API');
+        }
+      });
+    }
+  
+    function updateTable(data) {
+      if ($.fn.DataTable.isDataTable('#myTable')) {
+        $('#myTable').DataTable().destroy();
+      }
+  
+      $('#myTable').DataTable({
+        data: data,
+        columns: [
+          { data: 'name' },
+          { data: 'price' },
+          { data: 'description' },
+          {
+            data: 'image',
+            render: function (data, type, row) {
+              return '<img src="' + data + '" width="100" height="100">';
+            }
+          }
+        ],
+        pageLength: 5,
+        lengthMenu: [5, 10, 15],
+        order: [[1, 'asc']],
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
+        }
+      });
+    }
+  </script>
+  
+
+</body>
+</html>

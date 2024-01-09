@@ -24,10 +24,7 @@ def create_empleado(empleado: schemas.empleados, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Nombre ya registrado")
     return crud.create_empleado(db=db, empleado=empleado)
 
-@app.get("/empleados/", response_model=List[schemas.empleados])
-def read_empleados(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    empleados = crud.get_empleados(db, skip=skip, limit=limit)
-    return empleados
+
 
 @app.get("/empleados/{empleado_id}", response_model=schemas.empleados)
 def read_empleado(empleado_id: int, db: Session = Depends(get_db)):
@@ -43,10 +40,7 @@ def create_producto(producto: schemas.productos, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Nombre ya registrado")
     return crud.create_producto(db=db, producto=producto)
 
-@app.get("/productos/", response_model=List[schemas.productos])
-def read_productos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    productos = crud.get_productos(db, skip=skip, limit=limit)
-    return productos
+
 
 @app.get("/productos/{producto_id}", response_model=schemas.productos)
 def read_producto(producto_id: int, db: Session = Depends(get_db)):
@@ -62,10 +56,7 @@ def create_precio(precio: schemas.precios, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Precio ya registrado")
     return crud.create_precio(db=db, precio=precio)
 
-@app.get("/precios/", response_model=List[schemas.precios])
-def read_precios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    precios = crud.get_precios(db, skip=skip, limit=limit)
-    return precios
+
 
 @app.get("/precios/{precio_id}", response_model=schemas.precios)
 def read_precio(precio_id: int, db: Session = Depends(get_db)):
